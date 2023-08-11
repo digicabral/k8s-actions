@@ -1,0 +1,26 @@
+export UUID=$RANDOM
+export RG="ship-manager-api-demo-$UUID",
+echo $RG
+export RESOURCENAME="ship-manager-$UUID"
+export ACR="ship-manager-$UUID"
+
+az group create -l eastus -n $RG
+
+az cosmosdb create --kind MongoDB --enable-free-tier -n $RESOURCENAME -g $RG
+
+az acr create -n shipmanager17777 --sku Basic -g $RG
+
+az acr update -n shipmanager17777 --admin-enabled true
+
+az aks create -n $RESOURCENAME -g $RG -a http_application_routing -l southcentralus -s Standard_B2s --attach-acr $ACR --generate-ssh-keys -c 2
+
+Depois de tudo criado vamos colocar ele dentro do kubectl
+
+az aks get-credentials -n $RESOURCENAME -g $RG --admin
+
+kubectl config get-contexts
+
+kubectl get nodes
+
+Apaga tudo
+az group delete -n $RG --no-wait --yes 
